@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>載具工坊｜無人載具競技群島</title>
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}</style>
+<link rel="stylesheet" href="css/app.css">
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
+<style>
+  .f{display:grid;gap:10px}
+  .f .rng{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center}
+  .f .rng input{grid-column:1/-1;padding:0}
+  .f .rng span{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent)}
+  .pick3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .pick3 button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:.4em .2em;font-weight:700;font-size:.92em}
+  .pick3 button.on{background:var(--ink);color:#fff}
+  pre{white-space:pre-wrap;background:#0f172a;color:#e2e8f0;padding:12px;border-radius:10px;max-height:260px;overflow:auto;font-size:.82em}
+</style>
+</head>
+<body>
+<div class="stage"><canvas id="c"></canvas></div>
+<aside class="side l">
+  <div class="panel"><h3>① 類型與型態</h3><div class="pick3" id="types"></div><div class="pick3" id="vars" style="margin-top:6px"></div></div>
+  <div class="panel"><h3>② 調整參數</h3><div class="f" id="params"></div></div>
+  <div class="panel" id="aibox"></div>
+  <div class="panel"><h3>③ 請 AI 幫我設計</h3><textarea id="wish" placeholder="例：我要一台轉彎很穩、適合新手、深綠色的無人船"></textarea><button class="btn pri sm" id="ask" style="margin-top:8px">送出需求</button><p class="mut" id="aiNote" style="margin:.4em 0 0;font-size:.9em">AI 會回傳一組參數並自動套用，還會說明為什麼這樣調。</p></div>
+</aside>
+<aside class="side r">
+  <div class="panel"><h3>即時性能（同一組機構數學）</h3><input type="range" id="thr" min="0" max="100" value="70" style="padding:0"><div class="kv" id="read" style="margin-top:6px"></div><p class="mut" id="check" style="font-size:.88em;margin:.5em 0 0"></p></div>
+  <div class="panel"><h3>④ 匯出成品</h3>
+    <div class="row">
+      <button class="btn sm" id="xGlb">3D 模型 GLB</button>
+      <button class="btn sm" id="xPy">Blender 腳本 .py</button>
+      <button class="btn sm" id="xJson">規格 JSON</button>
+      <button class="btn pri sm" id="xSkill">技能包 SKILL.md</button>
+      <button class="btn sm" id="xPrompt">複製 AI 提示詞</button>
+    </div>
+    <p class="mut" style="font-size:.88em;margin:.5em 0 0">GLB 直接匯入 Blender；.py 貼進 Blender 的 Scripting 按 Run Script 會重建同一台；技能包交給 Claude Code／Codex，就能做出這台載具的可拆解 3D 模擬頁。</p>
+  </div>
+  <div class="panel"><h3>預覽</h3><pre id="out">（按上面任一個匯出按鈕，這裡會顯示內容）</pre></div>
+</aside>
+<script type="module" src="js/forge.js"></script>
+</body>
+</html>

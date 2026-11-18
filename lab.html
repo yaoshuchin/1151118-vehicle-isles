@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>載具 3D 建模台</title>
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}
+html,body{margin:0;height:100%;background:#eef3f8;overflow:hidden;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif}
+canvas{display:block;width:100%;height:100%}
+#bar{position:fixed;left:8px;right:8px;top:8px;display:flex;flex-wrap:wrap;gap:6px;z-index:3}
+#bar button{font:600 14px inherit;font-family:inherit;border:1px solid #cbd5e1;background:rgba(255,255,255,.92);border-radius:99px;padding:6px 12px;cursor:pointer}
+#bar button.on{background:#0f172a;color:#fff;border-color:#0f172a}
+#tag{position:fixed;left:10px;bottom:10px;background:rgba(15,23,42,.85);color:#fff;padding:5px 14px;border-radius:99px;font-size:14px;font-weight:700}
+#labels div{position:fixed;transform:translate(-50%,-100%);background:rgba(255,255,255,.95);border:1px solid #94a3b8;border-radius:8px;padding:2px 8px;font-size:12.5px;font-weight:700;color:#0f172a;white-space:nowrap;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+#labels div::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:10px;background:#64748b}
+body.full #bar button{font-size:16px;padding:8px 16px}
+</style>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
+<script src="js/kits/drone.js?v=1"></script>
+<script src="js/kits/robot.js?v=1"></script>
+<script src="js/kits/boat.js?v=1"></script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="bar"><button id="bEx">🔧 拆解（爆炸圖）</button><button id="bLb">🏷 零件標籤</button><button id="bAn" class="on">▶ 動作展示</button><button id="bRot">⟳ 自動旋轉</button><button id="bGlb">⬇ 下載 GLB 模型</button></div>
+<div id="labels"></div><div id="tag"></div>
+<script type="module">
+  // 共用 3D 建模台：?k=drone|robot|boat  欄位來源：postMessage({type:'kitspec',k,f}) 或網址 #f=<JSON>
+  import * as THREE from 'three';
+  import { createStudio } from './js/studio.js';
+  import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+  const q = new URLSearchParams(location.search);
+  let k = q.get('k') || 'drone';
+  if (!q.get('embed')) document.body.classList.add('full');
+  const S = createStudio(document.getElementById('c'), { cam: [1.2, 0.95, 1.5], target: [0, 0.38, 0], floorY: 0, maxD: 6, minD: 0.6 });
+  const O = { explode: false, labels: false, anim: true };
+  let kit = null, f = {}, mods = {};
+  // ?p=<任務預設>：示範用，套用該任務建議規格
+  if (q.get('p') && window.KITS[k]) { const K = window.KITS[k], pp = K.PRESETS[q.get('p')] ? q.get('p') : Object.keys(K.PRESETS)[0]; f = Object.assign({ [K.presetField]: pp, [K.prefix + 'name']: q.get('n') || '阿亮老師示範機', [K.prefix + 'number']: '1' }, K.PRESETS[pp]); }
+  try { const h = decodeURIComponent(location.hash.replace(/^#f=/, '')); if (h) f = JSON.parse(h); } catch (e) { }
+  async function rebuild() {
+    const K = window.KITS[k]; if (!K) return;
+    const m = mods[k] || (mods[k] = await import(`./js/kits/${k}-3d.js?v=1`));
+    if (kit) { S.scene.remove(kit.group); kit.group.traverse(o => { o.geometry?.dispose(); }); }
+    const spec = K.spec(f);
+    kit = m.build(THREE, spec);
+    kit.group.position.y = kit.lift ?? 0.3;
+    kit.group.traverse(o => { if (o.isMesh) o.castShadow = true; });
+    S.scene.add(kit.group);
+    document.getElementById('tag').textContent = spec.name + '・' + K.name;
+    const box = document.getElementById('labels'); box.innerHTML = '';
+    kit.parts.forEach(p => { const d = document.createElement('div'); d.textContent = p.name; p.el = d; box.appendChild(d); });
+  }
+  const v = new THREE.Vector3(), bb = new THREE.Box3();
+  S.onFrame((dt, t) => {
+    if (!kit) return;
+    kit.tick(dt, t, O);
+    kit.parts.forEach((p, i) => {
+      if (!O.labels) { p.el.style.display = 'none'; return; }
+      bb.setFromObject(p.obj); if (bb.isEmpty()) { p.el.style.display = 'none'; return; }
+      bb.getCenter(v); v.y = bb.max.y; v.project(S.camera);
+      if (v.z > 1) { p.el.style.display = 'none'; return; }
+      p.el.style.display = 'block';
+      p.el.style.left = ((v.x + 1) / 2 * innerWidth) + 'px'; p.el.style.top = ((1 - v.y) / 2 * innerHeight - 8 - (i % 3) * 14) + 'px';
+    });
+  });
+  const tg = (id, key, on) => { const b = document.getElementById(id); b.onclick = () => { O[key] = !O[key]; b.classList.toggle('on', O[key]); if (on) on(O[key]); }; };
+  tg('bEx', 'explode', x => { if (x) { O.labels = true; document.getElementById('bLb').classList.add('on'); } });
+  tg('bLb', 'labels'); tg('bAn', 'anim');
+  document.getElementById('bRot').onclick = e => { S.controls.autoRotate = !S.controls.autoRotate; S.controls.autoRotateSpeed = 1.4; e.target.classList.toggle('on', S.controls.autoRotate); };
+  document.getElementById('bGlb').onclick = () => {
+    if (!kit) return;
+    new GLTFExporter().parse(kit.group, r => {
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([r], { type: 'model/gltf-binary' }));
+      a.download = (window.KITS[k].spec(f).name || 'model') + '.glb'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    }, e => console.warn(e), { binary: true });
+  };
+  let tmr = 0;
+  addEventListener('message', e => {
+    if (e.origin !== location.origin || !e.data || e.data.type !== 'kitspec') return;
+    const nk = e.data.k || k, nf = e.data.f || {};
+    if (nk === k && JSON.stringify(nf) === JSON.stringify(f) && kit) return;
+    k = nk; f = nf; clearTimeout(tmr); tmr = setTimeout(rebuild, 60);
+  });
+  if (q.get('ex') === '1') { O.explode = true; O.labels = true; document.getElementById('bEx').classList.add('on'); document.getElementById('bLb').classList.add('on'); }
+  rebuild();
+  parent !== window && parent.postMessage({ type: 'labready', k }, location.origin);
+</script>
+</body>
+</html>

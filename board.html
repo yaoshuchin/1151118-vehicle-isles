@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>排行榜｜無人載具競技群島</title>
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}</style>
+<link rel="stylesheet" href="css/app.css">
+<style>
+  .boards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+  table{width:100%;border-collapse:collapse}
+  td,th{padding:.35em .4em;border-bottom:1px solid var(--line);text-align:left}
+  td:first-child{width:2.5em;font-weight:800;color:var(--accent)}
+  td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>全班排行榜</h1>
+  <div class="card row" style="margin-bottom:16px"><label for="nm">我的暱稱（成績會用這個名字上榜）</label><input id="nm" maxlength="16" style="max-width:260px"><button class="btn pri sm" id="save">儲存</button><span class="mut">排行榜資料存在課程雲端，全班共用；每 15 秒自動更新。</span></div>
+  <div class="boards" id="boards"></div>
+</main>
+<script type="module">
+  import { $, el, esc, topbar, toast, authorFooter } from './js/ui.js';
+  import { getBoard, myName, setName } from './js/board.js';
+  topbar('board');
+  document.body.append(authorFooter());
+  const B = [['soccer-practice','無人機・穿環練習'],['soccer-3v3','無人機足球 3 對 3'],['soccer-1v1','無人機足球 1 對 1'],['combat-1v1','格鬥機器人 1 對 1'],['combat-drill','格鬥・靶機傷害'],['boat-race','水道 5 船競速'],['boat-time','水道・單人計時'],['build-drone','組裝挑戰・無人機'],['build-robot','組裝挑戰・格鬥機器人'],['build-boat','組裝挑戰・無人船'],['quiz-drone','點零件測驗・無人機'],['quiz-robot','點零件測驗・格鬥機器人'],['quiz-boat','點零件測驗・無人船']];
+  $('#nm').value = myName();
+  $('#save').onclick = () => { setName($('#nm').value.trim()); toast('已儲存暱稱'); };
+  async function load() {
+    const box = $('#boards'); box.innerHTML = '';
+    const all = await Promise.all(B.map(([k]) => getBoard(k)));
+    B.forEach(([k, t], i) => {
+      const rows = all[i];
+      box.append(el('div', { class: 'card', html: `<h3>${esc(t)}</h3>` + (rows.length ? `<table>${rows.slice(0, 10).map((r, j) => `<tr><td>${j + 1}</td><td>${esc(r.name)}</td><td>${esc(r.label)}</td></tr>`).join('')}</table>` : '<p class="mut">還沒有紀錄</p>') }));
+    });
+  }
+  load(); setInterval(load, 15000);
+</script>
+</body>
+</html>

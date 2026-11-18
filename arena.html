@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>競技場｜無人載具競技群島</title>
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}</style>
+<link rel="stylesheet" href="css/app.css">
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
+<style>
+  body{background:#0b1220}
+  @media (min-width:761px){body{overflow:hidden}}
+  .score{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:22;display:flex;align-items:stretch;border-radius:14px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.35);font-variant-numeric:tabular-nums}
+  .score>div{padding:.25em .9em;font-weight:900;font-size:clamp(20px,2.4vw,34px);color:#fff;display:flex;align-items:center;gap:.4em}
+  .score .tR{background:var(--red)}.score .tB{background:var(--blue)}.score .mid{background:#0f172a;flex-direction:column;gap:0;line-height:1.1;font-size:clamp(16px,1.6vw,22px)}
+  .score .mid small{font-size:.6em;font-weight:700;color:#94a3b8}
+  .slots{display:flex;flex-direction:column;gap:6px}
+  .slot{display:grid;grid-template-columns:14px 1fr auto;gap:8px;align-items:center;padding:6px 8px;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .slot i{width:14px;height:14px;border-radius:50%}
+  .slot select{width:auto;padding:.15em .3em;font-size:.85em}
+  .slot .who{font-size:.8em;color:var(--mut)}
+  .slot.pad{border-color:var(--ok);box-shadow:0 0 0 2px #bbf7d0}
+  .modes{display:flex;gap:6px;flex-wrap:wrap}
+  .qrs{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+  .qr{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;background:#fff}
+  .qr svg,.qr img{width:100%;height:auto}
+  .qr b{display:block;font-size:1.1em}
+  .qr.joined{outline:4px solid var(--ok)}
+  .feed{position:fixed;left:50%;transform:translateX(-50%);top:132px;z-index:22;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
+  .feed div{background:rgba(15,23,42,.85);color:#fff;padding:.3em .8em;border-radius:10px;font-weight:700;animation:fade 4s forwards}
+  @keyframes fade{0%{opacity:0;transform:translateX(20px)}10%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
+  .banner{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);z-index:23;font-size:clamp(34px,6vw,84px);font-weight:900;color:#fff;text-shadow:0 6px 30px rgba(0,0,0,.6);pointer-events:none;opacity:0;transition:opacity .3s;text-align:center}
+  .banner.show{opacity:1}
+  .banner small{display:block;font-size:.35em;font-weight:700}
+  .touch{position:fixed;bottom:16px;z-index:21;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);display:none;touch-action:none}
+  .touch i{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:rgba(255,255,255,.7)}
+  @media (pointer:coarse){.touch{display:block}}
+  #tl{left:16px}#tr{right:16px}
+  .side.l{width:min(330px,30vw)}
+  .side.r{width:min(300px,26vw)}
+  .side.hide{display:none}
+  .help{font-size:.88em;color:var(--mut);margin:.4em 0 0}
+  .help kbd{background:#e2e8f0;border-radius:5px;padding:0 .35em;font-family:inherit;color:#0f172a}
+  @media (max-width:760px){.score{top:62px}.touch{position:fixed;bottom:16px}}
+</style>
+</head>
+<body>
+<div class="stage"><canvas id="c"></canvas></div>
+<div class="score" id="score"></div>
+<div class="feed" id="feed"></div>
+<div class="banner" id="banner"></div>
+<aside class="side l" id="left">
+  <div class="panel"><h3 id="gtitle">競技場</h3><div class="modes" id="modes"></div><p class="help" id="rules"></p></div>
+  <div class="panel"><h3>選手與控制</h3><div class="slots" id="slots"></div>
+    <p class="help">每一席可以是 <b>電腦</b>、<b>本機</b>（鍵盤或觸控）或 <b>手機</b>（掃 QR 加入）。手機斷線時電腦會自動接手。</p></div>
+  <div class="panel"><h3>比賽控制</h3>
+    <div class="row"><button class="btn pri sm" id="bStart">開始比賽</button><button class="btn sm" id="bPause">暫停</button><button class="btn sm" id="bReset">重設</button><button class="btn sm" id="bCam">切換鏡頭</button></div>
+    <div class="row" style="margin-top:8px" id="judge"></div>
+  </div>
+  <div class="panel" id="hostPanel" style="display:none"><h3>老師的競技平台</h3>
+    <p class="help" id="roomInfo">開房後，每一席會有自己的 QR 碼。遠端學員看 Meet 畫面掃 QR，手機就變成遙控器。</p>
+    <div class="row"><button class="btn blue sm" id="bHost">開對戰房</button><button class="btn sm" id="bQR" disabled>顯示 QR 碼</button><button class="btn sm" id="bClose" disabled>關房</button></div>
+  </div>
+</aside>
+<aside class="side r" id="right">
+  <div class="panel"><h3>即時資訊</h3><div class="kv" id="live"></div></div>
+  <div class="panel"><h3>操作方式</h3><div class="help" id="keys"></div></div>
+  <div class="panel"><h3>排行榜</h3><div id="board" class="kv"></div><a class='help' href='board.html'>看全部排行榜 →</a></div>
+</aside>
+<div class="touch" id="tl"><i></i></div><div class="touch" id="tr"><i></i></div>
+<div class="modal" id="qrModal"><div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">掃 QR 碼加入：<span id="qrRoom"></span></h2><button class="btn" id="qrClose">關閉</button></div><p class="mut">每支手機掃一個座位。掃到同一席會換人接手；遠端學員從 Meet 畫面掃也可以。</p><div class="qrs" id="qrs"></div></div></div>
+<script type="module" src="js/arena.js"></script>
+</body>
+</html>

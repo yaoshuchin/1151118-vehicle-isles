@@ -1,0 +1,137 @@
+/* ═════════ 平臺模式（學員用；參考研究智慧通：上方列＋左側欄＋步驟分頁＋滿版）═════════
+ * 只在 body.plat 生效；教師控制台學生畫面（?show=1）與 PDF（?print=1）仍用 deck.css 的投影片樣式。 */
+body.plat{
+  --pri:#3f7d3a; --acc:#d9982f; --pbg:#f1f5ea; --ppanel:#fff; --ppanel2:#f6f9f1; --pline:#d9e3cf; --ptext:#1f2a1d; --pmuted:#5d6b58;
+  --psh:0 1px 2px rgba(20,40,10,.06),0 6px 18px rgba(20,40,10,.06);
+  --navy:#2f5e2b; --navy2:#3f7d3a; --amber:#f2b84b; --amber2:#d9862f; --chip:#eef4e6; --paper:#fff;
+  background:var(--pbg); color:var(--ptext); line-height:1.65;
+}
+body.plat #bar{height:66px;background:var(--ppanel);color:var(--ptext);border-bottom:1px solid var(--pline);box-shadow:var(--psh);gap:14px;padding:0 18px}
+body.plat .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ptext);min-width:0;flex:none}
+body.plat .logo{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--pri);color:#fff;font-weight:700;font-size:18px}
+body.plat .brand-t{display:flex;flex-direction:column;line-height:1.25}
+body.plat .brand-t b{font-size:18px}
+body.plat .brand-t small{color:var(--pmuted);font-size:12px;white-space:nowrap}
+body.plat .partsel{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;font-weight:700;font-size:15px;min-width:0}
+body.plat .partsel select{font:15px var(--font);padding:8px 12px;border:1.5px solid var(--pline);border-radius:10px;background:var(--ppanel);color:var(--ptext);max-width:420px;min-width:200px}
+body.plat #where{display:none}
+body.plat .ib{border-color:var(--pline);color:var(--ptext);background:var(--ppanel);height:36px}
+body.plat .ib:hover{background:var(--ppanel2)}
+body.plat #tocbtn{display:none}
+body.plat .pill{border:1.5px solid var(--acc);background:#fbf3e4;color:#8a5a12;font-weight:700}
+body.plat .pill.ok{border-color:var(--pri);background:#e9f3e5;color:var(--pri)}
+body.plat .pill.mq{width:auto}
+body.plat .mqbox{display:none}
+body.plat #pg{color:var(--pmuted);font-size:14px}
+body.plat #wrap{position:fixed;inset:66px 0 0 0;display:grid;grid-template-columns:280px minmax(0,1fr);align-items:stretch;justify-content:stretch;overflow:hidden}
+body.plat #side{overflow:auto;padding:14px 10px 40px;border-right:1px solid var(--pline);background:var(--ppanel)}
+body.plat .nav-g{font-size:13px;font-weight:700;color:var(--pmuted);padding:14px 10px 6px;border-top:1px solid var(--pline);margin-top:8px}
+body.plat .nav-g:first-child{border:0;margin:0}
+body.plat .nav-i{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;color:var(--ptext);text-decoration:none;font-size:15px;line-height:1.4}
+body.plat .nav-i:hover{background:var(--ppanel2)}
+body.plat .nav-i.on{background:var(--pri);color:#fff;font-weight:700}
+body.plat .ni{display:grid;place-items:center;min-width:40px;height:26px;border-radius:8px;background:var(--ppanel2);color:var(--pri);font-size:12px;font-weight:700;flex:none}
+body.plat .nav-i.on .ni{background:rgba(255,255,255,.2);color:#fff}
+body.plat .nt{flex:1;min-width:0}
+body.plat .cnt{margin-left:auto;border:1px solid var(--pline);border-radius:999px;padding:0 8px;font-size:12px;flex:none}
+body.plat .cnt.full{border-color:var(--pri);color:var(--pri);background:#eef6ea}
+body.plat .nav-i.on .cnt{border-color:rgba(255,255,255,.5);color:#fff;background:transparent}
+body.plat .side-tip{font-size:13px;color:var(--pmuted);padding:12px 10px;margin:12px 0 0;border-top:1px solid var(--pline)}
+body.plat #main{overflow:auto;padding:16px 24px 50px;min-width:0}
+body.plat #stepper{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center}
+body.plat .stp-u{width:100%;font-weight:700;color:var(--pri);font-size:15px}
+body.plat .stp{display:flex;align-items:center;gap:8px;max-width:300px;padding:7px 14px 7px 8px;border:1.5px solid var(--pline);border-radius:12px;background:var(--ppanel);color:var(--ptext);text-decoration:none;font-size:14px;line-height:1.3}
+body.plat .stp span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.plat .stp b{display:grid;place-items:center;min-width:24px;height:24px;border-radius:999px;background:var(--ppanel2);color:var(--pri);font-size:12px;flex:none}
+body.plat .stp.do b{background:#fff1dc;color:#9a5b12}
+body.plat .stp.done b{background:var(--pri);color:#fff}
+body.plat .stp:hover{border-color:var(--pri)}
+body.plat .stp.on{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:700}
+body.plat .stp.on b{background:rgba(255,255,255,.25);color:#fff}
+body.plat #stage{width:auto!important;height:auto!important;transform:none!important}
+body.plat #stage>.slide{width:auto;height:auto}
+body.plat .slide{border-radius:14px;box-shadow:var(--psh);border:1px solid var(--pline);overflow:visible;background:var(--ppanel)}
+body.plat .shead{padding:20px 28px 6px;gap:12px}
+body.plat .shead h1{font-size:28px;text-wrap:balance}
+body.plat .chip{font-size:14px;padding:4px 10px;background:var(--pri)}
+body.plat .chip.do{background:var(--acc)}
+body.plat .chip.step{background:var(--chip);color:var(--pri)}
+body.plat .sbody{padding:8px 28px 4px;gap:24px;align-items:start}
+body.plat .col{overflow:visible;gap:12px}
+body.plat .why{font-size:18px}
+body.plat .why b,body.plat .txt b{color:#b5651d}
+body.plat .steps{font-size:17px;padding-left:28px}
+body.plat .steps li::marker{color:var(--acc)}
+body.plat .txt{font-size:17px}
+body.plat .lbl{font-size:14px;color:var(--pri)}
+body.plat .see,body.plat .warn{font-size:16px}
+body.plat .cmd{font-size:15px}
+body.plat .cmd .cp{font-size:13px}
+body.plat .say{margin:18px 28px 14px;font-size:16px;border-left-color:var(--acc);background:#fbf5e6}
+body.plat .snav{position:static;display:flex;justify-content:flex-end;gap:10px;padding:0 28px 20px}
+body.plat .snav button{height:40px;font-size:15px;border-color:var(--pri);color:var(--pri);border-radius:10px;padding:0 18px}
+body.plat .snav button[data-nav=next]{background:var(--pri);color:#fff}
+body.plat .snav button[data-nav=home]{background:#fff;color:var(--pri)}
+body.plat .foot{display:none}
+body.plat .imgs{flex:none}
+body.plat .imgs.n2,body.plat .imgs.g4{grid-template-rows:auto}
+body.plat .shot img{flex:none;height:auto;max-height:62vh}
+body.plat .shot figcaption{font-size:14px}
+body.plat .panel{overflow:visible;background:var(--ppanel2);border:1.5px solid var(--pline);gap:12px;padding:16px}
+body.plat .panel h3{font-size:17px}
+body.plat .fld>label,body.plat .fld>.q{font-size:16px}
+body.plat .fld input[type=text],body.plat .fld textarea,body.plat .fld select{font-size:16px;border-color:var(--pline)}
+body.plat .fld input:focus,body.plat .fld textarea:focus,body.plat .fld select:focus{outline:3px solid rgba(63,125,58,.3);border-color:var(--pri)}
+body.plat .opt{font-size:15px;border-color:var(--pline);padding:6px 11px}
+body.plat .opt input{accent-color:var(--pri);width:18px;height:18px}
+body.plat .opt.on{border-color:var(--pri);background:#eef6ea}
+body.plat .btn{font-size:15px;min-height:40px;padding:8px 14px;background:var(--pri)}
+body.plat .btn.am{background:var(--acc);color:#fff}
+body.plat .btn.ghost{background:#fff;color:var(--pri);border-color:var(--pri)}
+body.plat .spark{background:linear-gradient(90deg,#7b2ff7,#f107a3)}
+body.plat .hint{font-size:14px}
+body.plat .light{font-size:15px;border-color:var(--pline)}
+body.plat .loginbox{font-size:15px}
+body.plat .prev{font-size:14px;max-height:60vh}
+body.plat .list{font-size:15px}
+body.plat .tab{font-size:15px;border-color:var(--pri);color:var(--pri)}
+body.plat .tab.on{background:var(--pri);color:#fff}
+body.plat .cmp{font-size:16px}
+body.plat .sbody.one .cmp{font-size:17px}
+body.plat .cmp th{background:var(--chip);color:var(--pri)}
+body.plat .cmp td:first-child{color:var(--pri)}
+body.plat .flowbox span{font-size:16px;background:var(--ppanel2);border-color:var(--pline);color:var(--pri)}
+body.plat .flowbox span small{font-size:13px}
+body.plat .flowd .n{font-size:16px}
+body.plat .flowd .n b{font-size:19px}
+body.plat .cover{background:linear-gradient(135deg,#2f5e2b 0%,#3f7d3a 55%,#5a9a4b 100%);color:#fff}
+body.plat .cover .cv{padding:40px 44px 24px;gap:30px}
+body.plat .cover h1{font-size:38px}
+body.plat .cover .kick{font-size:17px;color:#ffe08a}
+body.plat .cover p{font-size:18px}
+body.plat .cover ul{font-size:17px}
+body.plat .cover .say{background:rgba(255,255,255,.14);color:#fff}
+body.plat .cover .snav button{background:#fff;color:var(--pri);border-color:#fff}
+body.plat #scrim{display:none}
+@media (max-width:900px){
+  body.plat #tocbtn{display:block}
+  body.plat #bar{gap:8px;padding:0 10px}
+  body.plat .brand-t,body.plat .partsel span,body.plat #pg,body.plat #homebtn{display:none}
+  body.plat .partsel{justify-content:flex-start}
+  body.plat .partsel select{min-width:0;width:100%;font-size:14px;padding:7px 8px}
+  body.plat #stepper{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}
+  body.plat .stp-u{display:none}
+  body.plat .stp{flex:none;max-width:220px}
+  body.plat .shead{flex-wrap:wrap;padding:16px 16px 4px}
+  body.plat .sbody{padding:8px 16px 4px}
+  body.plat .say{margin:14px 16px}
+  body.plat .snav{padding:0 16px 16px}
+  body.plat #status{display:none}
+  body.plat #wrap{grid-template-columns:1fr}
+  body.plat #side{position:fixed;top:66px;left:0;bottom:0;width:280px;z-index:40;transform:translateX(-105%);transition:transform .2s}
+  body.plat.nav-open #side{transform:none}
+  body.plat.nav-open #scrim{display:block;position:fixed;inset:66px 0 0 0;background:rgba(0,0,0,.35);z-index:35}
+  body.plat #main{padding:12px 16px 40px}
+  body.plat .sbody,body.plat .sbody.wideR,body.plat .sbody.wideL,body.plat .cover .cv{grid-template-columns:1fr}
+  body.plat .shead h1{font-size:23px}
+}

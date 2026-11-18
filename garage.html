@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>機構拆解車庫｜無人載具競技群島</title>
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}</style>
+<link rel="stylesheet" href="css/app.css">
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
+<style>
+  .pick3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .pick3 button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:.5em .3em;font-weight:700}
+  .pick3 button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .vlist{display:flex;flex-direction:column;gap:6px}
+  .vlist button{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:10px;padding:.5em .7em}
+  .vlist button.on{outline:3px solid var(--accent);border-color:transparent}
+  .dot{width:18px;height:18px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)}
+  .vlist small{display:block;color:var(--mut);font-weight:400}
+  .plist{display:flex;flex-wrap:wrap;gap:6px}
+  .plist button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:.2em .7em;font-size:.9em}
+  .plist button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .plist button.done{background:#dcfce7;border-color:#86efac;color:#166534}
+  .partcard h4{margin:.1em 0;font-size:1.25em}
+  .partcard .en{color:var(--mut);font-size:.9em}
+  .state{font-weight:800;color:var(--accent);font-size:1.1em}
+  .caption{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);z-index:22;background:rgba(15,23,42,.88);color:#fff;padding:.55em 1.2em;border-radius:12px;font-size:clamp(16px,1.6vw,22px);font-weight:700;max-width:min(900px,calc(100% - 32px));text-align:center;opacity:0;transition:opacity .3s}
+  .caption.show{opacity:1}
+  .tourtag{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:22;background:#fff;border:1px solid var(--line);padding:.2em .8em;border-radius:99px;font-size:.85em;font-weight:700;display:none}
+  .tourtag.show{display:block}
+  input[type=range]{padding:0}
+</style>
+</head>
+<body>
+<div class="stage"><canvas id="c"></canvas></div>
+<aside class="side l">
+  <div class="panel">
+    <h3>① 選載具類型</h3>
+    <div class="pick3" id="types"></div>
+  </div>
+  <div class="panel">
+    <h3>② 選型態</h3>
+    <div class="vlist" id="variants"></div>
+  </div>
+  <div class="panel">
+    <h3>③ 零件清單 <span class="mut" style="font-weight:400;font-size:.85em">點名稱或點模型</span></h3>
+    <div class="plist" id="plist"></div>
+  </div>
+  <div class="panel partcard" id="card"><p class="mut">點任何一個零件，這裡會說明它的功能與原理。</p></div>
+</aside>
+<aside class="side r">
+  <div class="panel">
+    <h3>油門（唯一的輸入）</h3>
+    <input type="range" id="thr" min="0" max="100" value="55">
+    <div class="state" id="state">—</div>
+  </div>
+  <div class="panel">
+    <h3>即時讀數 <span class="mut" style="font-weight:400;font-size:.85em">全部由同一個函數算出</span></h3>
+    <div class="kv" id="read"></div>
+    <div id="bars" style="margin-top:10px;display:grid;gap:6px"></div>
+  </div>
+  <div class="panel"><h3>手算抽查</h3><p id="check" style="margin:0"></p></div>
+  <div class="panel" id="game" style="display:none"></div>
+</aside>
+<div class="tourtag" id="tourtag">自動導覽中・點任何地方接手</div>
+<div class="caption" id="cap"></div>
+<div class="bottombar">
+  <button class="btn" id="bExplode">爆炸分解</button>
+  <button class="btn" id="bJoin">合體</button>
+  <button class="btn" id="bXray">X 光透視</button>
+  <button class="btn" id="bWork">只看工作中的零件</button>
+  <button class="btn blue" id="bQuiz">點出這個零件</button>
+  <button class="btn pri" id="bBuild">組裝挑戰</button>
+  <button class="btn" id="bTour">自動導覽</button>
+  <button class="btn" id="bGlb">下載 GLB（給 Blender）</button>
+</div>
+<script type="module" src="js/garage.js"></script>
+</body>
+</html>

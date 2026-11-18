@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>博物館｜無人載具競技群島</title>
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}</style>
+<link rel="stylesheet" href="css/app.css">
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
+<style>
+  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .tabs button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:.45em .2em;font-weight:700}
+  .tabs button.on{background:var(--ink);color:#fff}
+  .tl{display:flex;flex-direction:column;gap:4px}
+  .tl button{display:grid;grid-template-columns:5.6em 1fr auto;gap:8px;text-align:left;border:1px solid transparent;background:none;border-radius:9px;padding:.35em .5em}
+  .tl button:hover{background:#f1f5f9}.tl button.on{background:#fff7ed;border-color:#fdba74}
+  .tl .y{color:var(--accent);font-weight:800;font-variant-numeric:tabular-nums}
+  .ex .y{font-size:1.1em;color:var(--accent);font-weight:800}
+  .ex h2{font-size:clamp(22px,2vw,30px)}
+  .learn{background:#fff7ed;border-left:4px solid var(--accent);padding:.6em .8em;border-radius:8px}
+  .stamp{font-size:.85em;color:var(--ok);font-weight:700}
+</style>
+</head>
+<body>
+<div class="stage"><canvas id="c"></canvas></div>
+<aside class="side l">
+  <div class="panel"><h3>選擇博物館</h3><div class="tabs" id="tabs"></div><p class="mut" id="intro" style="margin:.6em 0 0"></p></div>
+  <div class="panel"><h3>展品年表 <span class="mut" id="prog" style="font-weight:400;font-size:.85em"></span></h3><div class="tl" id="tl"></div></div>
+</aside>
+<aside class="side r">
+  <div class="panel ex" id="ex"></div>
+  <div class="panel"><div class="row"><button class="btn sm" id="prev">◀ 上一件</button><button class="btn sm" id="next">下一件 ▶</button><button class="btn sm" id="tour">自動導覽</button></div>
+  <p class="mut" style="margin:.5em 0 0;font-size:.88em">點 3D 展台也能切換展品。看完每一件會蓋章，三館全部蓋滿就完成「博物館護照」。</p></div>
+</aside>
+<script type="module" src="js/museum.js"></script>
+</body>
+</html>

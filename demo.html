@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>示範成果｜3D 建模</title>
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}</style>
+<script>new MutationObserver(function(){document.querySelectorAll('#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]').forEach(function(e){e.remove()})}).observe(document.documentElement,{childList:true,subtree:true});</script>
+<link rel="stylesheet" href="css/app.css">
+<script src="js/kits/drone.js?v=1"></script><script src="js/kits/robot.js?v=1"></script><script src="js/kits/boat.js?v=1"></script>
+<style>
+  html,body{height:auto;overflow:auto}
+  .top{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px clamp(16px,3vw,40px);background:#0f172a;color:#fff}
+  .top h1{font-size:clamp(20px,2.4vw,30px);margin:0;color:#fff;flex:1;text-wrap:balance}
+  .top select,.top a{font:inherit}
+  .main{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;padding:16px clamp(16px,3vw,40px) 40px}
+  iframe{width:100%;height:calc(100vh - 110px);min-height:420px;border:0;border-radius:14px;background:#eef3f8}
+  .side{background:#fff;border:1px solid #d7e0ea;border-radius:14px;padding:14px 16px;overflow:auto;max-height:calc(100vh - 110px)}
+  table{width:100%;border-collapse:collapse;font-size:14.5px;margin:.3em 0 .8em}th,td{border:1px solid #cbd5e1;padding:5px 7px;text-align:left;vertical-align:top}thead th{background:#0f172a;color:#fff}
+  .warn{color:#b45309}.ok{color:#15803d}
+  @media (max-width:900px){.main{grid-template-columns:1fr}iframe{height:60vh}.side{max-height:none}}
+</style>
+</head>
+<body>
+<div class="top"><h1 id="h">示範成果</h1><label>任務：<select id="ps"></select></label><a class='btn sm' href='portal.html'>🏠 課程首頁</a></div>
+<div class="main"><iframe id="fr" title="3D 示範"></iframe><div class="side" id="side"></div></div>
+<script>
+  var q = new URLSearchParams(location.search), k = window.KITS[q.get('k')] ? q.get('k') : 'drone', K = window.KITS[k];
+  var ps = document.getElementById('ps');
+  Object.keys(K.PRESETS).forEach(function (p) { var o = document.createElement('option'); o.value = p; var m = (K.MISSION || []).find(function (x) { return x.v === p; }); o.textContent = m ? m.l : p; ps.appendChild(o); });
+  function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function mdTable(md) { // 只轉表格、標題與清單
+    var out = [], lines = md.split('\n'), i = 0;
+    while (i < lines.length) { var l = lines[i];
+      if (/^\|/.test(l)) { var rows = []; while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i]); i++; }
+        var cells = function (r) { return r.replace(/^\||\|$/g, '').split('|').map(function (c) { return c.trim(); }); };
+        out.push('<table><thead><tr>' + cells(rows[0]).map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') + '</tr></thead><tbody>' + rows.slice(2).map(function (r) { return '<tr>' + cells(r).map(function (c) { return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>'); continue; }
+      if (/^# /.test(l)) out.push('<h2>' + esc(l.slice(2)) + '</h2>'); else if (/^## /.test(l)) out.push('<h3>' + esc(l.slice(3)) + '</h3>');
+      else if (/^- /.test(l)) out.push('<p class="' + (/⚠/.test(l) ? 'warn' : 'ok') + '">' + esc(l.slice(2)) + '</p>'); i++; }
+    return out.join('');
+  }
+  function go(p) {
+    var f = {}; f[K.presetField] = p; f[K.prefix + 'name'] = '阿亮老師示範機'; f[K.prefix + 'number'] = '1'; Object.assign(f, K.PRESETS[p]);
+    var s = K.spec(f);
+    document.getElementById('fr').src = 'lab.html?k=' + k + '&p=' + p;
+    document.getElementById('h').textContent = '示範成果｜' + K.name + '「' + s.name + '」';
+    document.getElementById('side').innerHTML = '<p style="margin:0 0 .5em;color:#526077">這是用課程生成器「套用建議規格」產生的示範。左邊 3D 可拆解、看標籤、下載 GLB；右邊是會一起放進安裝包的規格書與教學估算。</p>' + mdTable(K.md(s));
+  }
+  var p0 = K.PRESETS[q.get('p')] ? q.get('p') : Object.keys(K.PRESETS)[0]; ps.value = p0; ps.onchange = function () { go(ps.value); }; go(p0);
+</script>
+<script type="module">import { authorFooter } from './js/ui.js'; document.body.append(authorFooter());</script>
+</body>
+</html>

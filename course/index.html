@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>無人載具 AI 互動平台</title>
+<script>
+(function(){
+  var H = '5cae49b1fea5b5b969cdc931b8338968940c92309aa2339360cdd5c77be4a4ff';
+  try {
+    if (localStorage.getItem('vi.auth') !== H) {
+      location.replace('../index.html?next=' + encodeURIComponent('course/' + location.search));
+    }
+  } catch(e) {}
+})();
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231d3557'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23ffb703' font-family='Arial' font-weight='700'%3EAI%3C/text%3E%3C/svg%3E">
+<script type="importmap">{"imports":{"three":"../vendor/three/three.module.js","three/addons/":"../vendor/three/addons/"}}</script>
+<link rel="stylesheet" href="deck.css?v=20261117n">
+<link rel="stylesheet" href="plat.css?v=20261117n">
+<link rel="stylesheet" href="kit.css?v=2">
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}</style><script>new MutationObserver(function(){document.querySelectorAll('#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]').forEach(function(e){e.remove()})}).observe(document.documentElement,{childList:true,subtree:true});</script>
+</head>
+<body>
+<header id="bar">
+  <button id="tocbtn" class="ib" title="目錄（T）" aria-label="目錄">☰</button>
+  <div id="where"><b id="dtitle"></b><span id="utitle"></span></div>
+  <div id="status">
+    <button id="folderst" class="pill" title="學員資料夾">📁 尚未設定資料夾</button>
+    <button id="bridgest" class="pill mq" title="AI 串接狀態"><span id="bdot">⚪ 未串接</span><span class="mqbox"><span id="mqt"></span></span></button>
+  </div>
+  <div id="nav">
+    <button id="prev" class="ib" aria-label="上一頁">◀</button>
+    <span id="pg">1 / 1</span>
+    <button id="next" class="ib" aria-label="下一頁">▶</button>
+    <button id="homebtn" class="ib" title="回課程首頁" aria-label="回首頁">🏠</button>
+    <button id="lockbtn" class="ib" title="重新上鎖" aria-label="重新上鎖" onclick="localStorage.removeItem('vi.auth');location.replace('../index.html');">🔒</button>
+  </div>
+</header>
+<main id="wrap"><div id="stage" role="region" aria-live="polite"></div></main>
+<aside id="toc" hidden><div id="tochead"><b>目錄</b><button id="tocx" class="ib" aria-label="關閉">✕</button></div><div id="toclist"></div></aside>
+<div id="lb" hidden><img id="lbimg" alt=""><div id="lbtip">滾輪放大縮小・拖曳移動・點背景或按 Esc 關閉</div></div>
+<div id="toast" role="status" hidden></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+/* 篇章清單（平臺模式上方「目前篇章」與左側欄用） */
+window.DECK_PARTS = [{ id: 'DR', t: '無人機篇｜3D 建模實作' }, { id: 'RB', t: '格鬥機器人篇｜3D 建模實作' }, { id: 'BT', t: '水上無人船篇｜3D 建模實作' }, { id: 'D1', t: '第一篇｜中央島・認識機械' }, { id: 'D2', t: '第二篇｜模擬競技・跟電腦對打' }, { id: 'D3', t: '第三篇｜工坊島・AI 打造載具島' }, { id: 'D4', t: '第四篇｜競技平台・賽事' }];
+/* 依網址 ?d=day1 載入哪一篇的內容 */
+(function(){
+  var d = (new URLSearchParams(location.search).get('d') || 'DR').replace(/[^a-z0-9]/gi, '');
+  var V = "?v=9cli", w = ['../js/kits/drone.js', '../js/kits/robot.js', '../js/kits/boat.js', 'widgets.js', 'widgets-robot.js', 'widgets-boat.js', 'maint.js', 'vcourse.js', 'data/content.js', 'deckmaker.js', 'data/' + d + '.js'];
+  document.write(w.map(function (x) { return '<script src="' + x + V + '"><\/script>'; }).join(''));
+})();
+</script>
+<script type="module" src="vk.js?v=2"></script>
+<script type="module" src="deck.js?v=10folder"></script>
+<script src="../js/fontsize.js?v=1"></script>
+</body>
+</html>

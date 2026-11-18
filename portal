@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>無人載具 3D 建模實作｜課程首頁</title>
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}</style>
+<script>new MutationObserver(function(){document.querySelectorAll('#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]').forEach(function(e){e.remove()})}).observe(document.documentElement,{childList:true,subtree:true});</script>
+<link rel="stylesheet" href="css/app.css">
+<style>
+  body{background:#eef3f8;height:auto;overflow:auto}
+  .hero{background:linear-gradient(120deg,#0b1220 0%,#12305a 60%,#1d4e89 100%);color:#fff;padding:34px clamp(16px,4vw,56px) 30px}
+  .hero .kick{color:#fdba74;font-weight:800;letter-spacing:.06em}
+  .hero h1{font-size:clamp(30px,4.4vw,60px);margin:.15em 0 .2em;color:#fff;text-wrap:balance}
+  .hero p{max-width:none;font-size:clamp(15px,1.3vw,19px);color:#dbeafe;margin:.2em 0}
+  .wrap{padding:22px clamp(16px,4vw,56px) 40px}
+  h2{font-size:clamp(21px,2vw,28px);margin:.6em 0 .4em;text-wrap:balance}
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+  .tabs button{border:1.5px solid #cbd5e1;background:#fff;border-radius:99px;padding:.5em 1.1em;font-weight:700;font-size:16px}
+  .tabs button.on{background:#0f172a;color:#fff;border-color:#0f172a}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .card{background:#fff;border:1px solid #d7e0ea;border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;box-shadow:0 4px 16px rgba(15,23,42,.05)}
+  .card h3{margin:0;font-size:19px}
+  .card p{margin:0;color:#526077;font-size:15px}
+  .card .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:6px}
+  .card.main{border:2px solid #ff5a1f;background:linear-gradient(180deg,#fff7ed,#fff)}
+  .tag{display:inline-block;font-size:12.5px;font-weight:800;border-radius:99px;padding:2px 10px;background:#e0f2fe;color:#075985;align-self:flex-start}
+  .tag.today{background:#ff5a1f;color:#fff}
+  .lab{width:100%;height:clamp(300px,42vh,460px);border:0;border-radius:12px;background:#eef3f8}
+  .steps3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:6px 0 4px}
+  .steps3 div{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:12px 14px;font-size:15px}.steps3 b{color:#fdba74;display:block;font-size:17px}
+  .hero{display:flex;align-items:center;gap:clamp(16px,3vw,40px);flex-wrap:wrap}
+  .hero .txt{flex:1 1 380px;min-width:0}
+  .hero-art.island{flex:0 1 min(760px,52vw);aspect-ratio:3/2;overflow:hidden;border-radius:18px;background:radial-gradient(ellipse at 50% 35%,#fff 0%,#dff0ff 45%,#ffe9d6 100%);box-shadow:0 10px 30px rgba(0,0,0,.35);align-self:flex-start}
+  .hero-art.island iframe{width:100%;height:100%;border:0;display:block}
+  @media (max-width:900px){.hero-art.island{flex:1 1 100%}}
+  .bgm-btn{position:fixed;left:18px;bottom:18px;z-index:51;font:800 16px "Noto Sans TC",system-ui,sans-serif;color:#fff;background:linear-gradient(180deg,#ff8a4c,#e8531f 60%,#c2410c);border:0;border-radius:999px;padding:11px 20px;box-shadow:0 5px 0 #8a2d08,0 10px 22px rgba(120,45,10,.35);cursor:pointer;transition:transform .12s,box-shadow .12s}
+  .bgm-btn:hover{transform:translateY(-2px)}
+  .bgm-btn:active{transform:translateY(4px);box-shadow:0 1px 0 #8a2d08,0 3px 8px rgba(120,45,10,.3)}
+  .bgm-btn.off{background:linear-gradient(180deg,#9a8b7c,#6b5d50);box-shadow:0 5px 0 #3e342b,0 10px 22px rgba(40,30,20,.3)}
+  @media (max-width:600px){.hero{padding:24px 16px}.wrap{padding:16px}}</style>
+</head>
+<body>
+<header class="hero">
+  <div class="txt">
+  <div class="kick">阿亮老師主講｜無人機・人形格鬥機器人・水上無人船</div>
+  <h1>無人載具 3D 建模實作｜課程首頁</h1>
+  <p>這是本課程唯一需要的網址：互動講義、3D 建模生成器、示範網頁與示範成果，全部從這裡進入。講義內的填寫會自動存在您這台電腦的瀏覽器。</p>
+  </div>
+  <div class="hero-art island"><iframe src="assets/island/index.html" title="無人載具課程：3D 島嶼倒數"></iframe></div>
+</header>
+<button id="bgmBtn" class="bgm-btn" type="button" title="按一下靜音背景音樂" aria-pressed="true" onclick="var f=document.querySelector('.hero-art iframe'),w=f&&f.contentWindow;if(w&&w.islandMusic){w.islandMusic.toggle();return;}var on=true;try{on=JSON.parse(localStorage.getItem('island.bgmOn')||'true')&&!JSON.parse(localStorage.getItem('island.mute')||'false');}catch(e){}on=!on;try{localStorage.setItem('island.bgmOn',JSON.stringify(on));if(on)localStorage.setItem('island.mute','false');}catch(e){}this.textContent=on?'🔊 音樂：開':'🔇 音樂：關';this.classList.toggle('off',!on);">🔊 音樂：開</button>
+<main class="wrap">
+  <div class="steps3">
+    <div><b>① 看懂機構與規則</b>互動講義一頁一頁講解：種類、結構、操控、競賽規則。</div>
+    <div><b>② 設計並建模</b>六步生成器選規格，3D 即時變化，系統自動估算與檢查。</div>
+    <div><b>③ 交給 AI 做成網頁</b>打包安裝包，貼指令給 Codex／Claude Code／Antigravity。</div>
+  </div>
+  <div class="tabs" role="tablist">
+    <button data-k="drone" class="on">無人機篇</button><button data-k="robot">人形格鬥機器人篇</button><button data-k="boat">水上無人船篇</button><button data-k="more">更多資源</button>
+  </div>
+  <section id="pane"></section>
+</main>
+<script type="module">
+  import { authorFooter } from './js/ui.js';
+  document.body.append(authorFooter());
+  const T = {
+    drone: { p: 'soccer40', d: 'DR', name: '無人機', date: '2026/11/18（三）19:00–22:00', today: true, g: 'soccer', v: 'red', units: ['無人機有哪些種類', '機構解說：骨架、動力、航電', '飛行原理與操控（混控模擬）', '競賽說明：無人機足球與 FPV 競速', '平台 3D 建模：六步生成器', '故障診斷與賽前檢查（FMEA、紀錄判讀、檢查表）＋交給 AI 建置'],
+      demos: [['機構拆解車庫', 'garage.html?type=drone&v=red', '點零件看功能、拆解爆炸圖、讀推重比'], ['無人機博物館', 'museum.html?type=drone', '從靶機到無人機足球的發展史'], ['無人機足球場', 'arena.html?game=soccer&mode=3v3', '3 對 3、1 對 1、穿環練習']] },
+    robot: { p: '', d: 'RB', name: '人形格鬥機器人', date: '下一堂課', g: 'combat', v: 'boxer', units: ['人形格鬥機器人的種類與級別', '機構解說：關節、舵機、平衡', '運動原理與操控', '競賽規則', '平台 3D 建模：六步生成器', '故障診斷與賽前檢查（FMEA、紀錄判讀、檢查表）＋交給 AI 建置'],
+      demos: [['機構拆解車庫', 'garage.html?type=robot&v=boxer', '關節、舵機、出拳速度與平衡'], ['格鬥機器人博物館', 'museum.html?type=robot', '人形機器人與格鬥賽發展'], ['人形格鬥擂台', 'arena.html?game=combat', '出拳、踢腿、格擋、倒地讀秒']] },
+    boat: { p: '', d: 'BT', name: '水上無人船', date: '下一堂課', g: 'boat', v: 'foil', units: ['無人船（USV）的種類與船型', '機構解說：船體、推進、感測', '航行原理與操控', '競賽規則', '平台 3D 建模：六步生成器', '故障診斷與賽前檢查（FMEA、紀錄判讀、檢查表）＋交給 AI 建置'],
+      demos: [['機構拆解車庫', 'garage.html?type=boat&v=foil', '螺距、滑脫率、水翼起飛速度'], ['無人船博物館', 'museum.html?type=boat', '從特斯拉遙控船到 USV'], ['無人船水道賽', 'arena.html?game=boat', '繞標競速與計時']] }
+  };
+  const pane = document.getElementById('pane');
+  function show(k) {
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.k === k));
+    if (k === 'more') {
+      pane.innerHTML = `<h2>更多資源</h2><div class="grid">
+        <div class="card"><span class="tag">生成平台</span><h3>載具島工坊</h3><p>把您的載具放上一座 3D 島嶼，下載載具島包交給 AI 蓋島。</p><div class="row"><a class="btn pri" href="https://aliang-vehicle-forge.netlify.app" target="_blank" rel="noopener">打開載具島工坊</a></div></div>
+        <div class="card"><span class="tag">示範成品</span><h3>無人載具競技群島</h3><p>老師示範的完整成品島：拆解車庫、三座博物館、三座競技場。</p><div class="row"><a class="btn" href="hub.html">進入群島</a></div></div>
+        <div class="card"><span class="tag">成果</span><h3>排行榜</h3><p>穿環練習、對戰與水道賽的成績紀錄。</p><div class="row"><a class="btn" href="board.html">看排行榜</a></div></div>
+        <div class="card"><span class="tag">完整課程</span><h3>四天完整版講義</h3><p>第一篇～第四篇（中央島、模擬競技、工坊島、競技平台）。</p><div class="row"><a class="btn" href="course/?d=D1">第一篇</a><a class="btn" href="course/?d=D2">第二篇</a><a class="btn" href="course/?d=D3">第三篇</a><a class="btn" href="course/?d=D4">第四篇</a></div></div>
+      </div>`; return;
+    }
+    const t = T[k];
+    pane.innerHTML = `<div class="grid">
+      <div class="card main"><span class="tag ${t.today ? 'today' : ''}">${t.today ? '今晚上課' : t.date}</span><h3>互動講義｜${t.name}篇 3D 建模實作</h3><p>${t.today ? t.date + '。' : ''}講解、動手、生成器、打包都在同一份講義。</p>
+        <ol style="margin:.2em 0 0;padding-left:1.3em;color:#334155;font-size:15px">${t.units.map(u => `<li>${u}</li>`).join('')}</ol>
+        <div class="row"><a class="btn pri" href="course/?d=${t.d}">▶ 開始上課</a><a class="btn" href="course/?d=${t.d}&u=U05">直接到 3D 建模生成器</a></div></div>
+      <div class="card"><span class="tag">示範成果</span><h3>老師用生成器做好的 3D ${t.name}</h3><iframe class="lab" src="lab.html?k=${k}&embed=1&p=${t.p}" title="${t.name}示範 3D" loading="lazy"></iframe><div class="row"><a class="btn" href="demo.html?k=${k}&p=${t.p}" target="_blank" rel="noopener">⛶ 打開示範成果頁</a></div></div>
+    </div><h2>示範網頁（課堂動手用）</h2><div class="grid">${t.demos.map(([n, h, p]) => `<div class="card"><span class="tag">示範網頁</span><h3>${n}</h3><p>${p}</p><div class="row"><a class="btn" href="${h}" target="_blank" rel="noopener">打開</a></div></div>`).join('')}</div>`;
+    try { localStorage.setItem('portal.tab', k); } catch (e) { }
+  }
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => show(b.dataset.k));
+  let start = 'drone'; try { start = localStorage.getItem('portal.tab') || 'drone'; } catch (e) { }
+  show(T[start] || start === 'more' ? start : 'drone');
+</script>
+<script src="js/fontsize.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>島嶼倒數</title>
+<!-- 島嶼倒數（網頁版）｜技能 D:\skills\island-countdown-web｜引擎沿用阿亮老師「島嶼倒數生成器」｜設定只改 config.js -->
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}</style>
+<script>new MutationObserver(function(){document.querySelectorAll('#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]').forEach(function(e){e.remove()})}).observe(document.documentElement,{childList:true,subtree:true});</script>
+<style>
+:root{--ac:#e8531f;--ac2:#c2410c;--ink:#3b2a1e}
+html,body{margin:0;height:100%;overflow:hidden;font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;background:transparent}
+body.solo{background:radial-gradient(ellipse at 50% 35%,#fff 0%,#dff0ff 45%,#ffe9d6 100%)}
+#stage{position:absolute;inset:0}
+#cv{width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
+#cv:active{cursor:grabbing}
+#hud{position:absolute;left:0;right:0;bottom:10px;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+#hud>*{pointer-events:auto}
+#lb:empty{display:none}#lb{font-size:clamp(12px,1.5vw,16px);font-weight:700;color:#7a3b16;background:rgba(255,248,240,.88);border:1px solid #f0c9a8;border-radius:999px;padding:3px 14px;letter-spacing:.04em;text-align:center}
+#t{padding:1px 22px;border-radius:14px;background:linear-gradient(135deg,var(--ac),var(--ac2));font-size:clamp(26px,3.8vw,56px);font-weight:900;color:#fff;letter-spacing:.04em;font-variant-numeric:tabular-nums;box-shadow:0 6px 18px rgba(194,65,12,.35);cursor:pointer;user-select:none}
+#t small{font-size:.45em;font-weight:800;margin:0 .15em 0 .05em}
+#t.live{background:linear-gradient(135deg,#0f766e,#115e59)}
+#t.idle{background:linear-gradient(135deg,#8b7b6b,#6b5d50);box-shadow:0 4px 12px rgba(60,40,20,.25)}
+#t.warn{animation:pulse .8s ease-in-out infinite}
+#t.done{background:linear-gradient(135deg,#d97706,#b45309);animation:pulse .6s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.07)}}
+#bar{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;background:rgba(255,255,255,.82);border:1px solid #ead9c8;border-radius:999px;padding:4px 6px;box-shadow:0 4px 14px rgba(60,40,20,.12)}
+#bar button{font:700 clamp(12px,1.3vw,15px) "Noto Sans TC",system-ui,sans-serif;border:0;border-radius:999px;padding:5px 11px;background:#f4ebe2;color:var(--ink);cursor:pointer}
+#bar button:hover{background:#ffe2cf}
+#bar button.on{background:var(--ac);color:#fff}
+#bar button.main{background:var(--ink);color:#fff;min-width:44px}
+#edit{display:flex;align-items:center;gap:4px;background:#fff;border:1px solid #ead9c8;border-radius:12px;padding:4px 8px;font-weight:800;color:var(--ink)}
+#edit[hidden]{display:none}
+#edit input{width:56px;font:800 18px system-ui;text-align:center;border:1.5px solid #d9c6b4;border-radius:8px;padding:3px}
+#edit button{font:700 14px system-ui;border:0;border-radius:8px;padding:6px 12px;background:var(--ac);color:#fff;cursor:pointer}
+.chap{position:absolute;top:10px;bottom:120px;display:flex;flex-direction:column;justify-content:center;gap:clamp(4px,.8vh,9px);width:clamp(118px,19vw,230px);perspective:700px;z-index:3}
+.chap.L{left:10px}.chap.R{right:10px}
+.chap h3{margin:0 0 2px;font-size:clamp(11px,1.2vw,14px);font-weight:900;color:#7a3b16;text-shadow:0 1px 0 #fff;letter-spacing:.03em}
+.chap.R h3{text-align:right}
+.cb{display:flex;align-items:center;gap:6px;font:800 clamp(11px,1.25vw,16px)/1.15 "Noto Sans TC",system-ui,sans-serif;color:#fff;text-decoration:none;padding:clamp(5px,.9vh,9px) clamp(8px,1vw,14px);border-radius:12px;
+  background:linear-gradient(180deg,#ff8a4c 0%,#e8531f 55%,#c2410c 100%);box-shadow:0 5px 0 #8a2d08,0 9px 16px rgba(120,45,10,.35),inset 0 2px 0 rgba(255,255,255,.45);
+  transition:transform .15s,box-shadow .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.chap.L .cb{transform:rotateY(16deg);transform-origin:left center}
+.chap.R .cb{transform:rotateY(-16deg);transform-origin:right center;flex-direction:row-reverse;text-align:right}
+.cb:hover{transform:rotateY(0) translateY(-2px) scale(1.04);box-shadow:0 7px 0 #8a2d08,0 12px 20px rgba(120,45,10,.4),inset 0 2px 0 rgba(255,255,255,.45)}
+.cb:active{transform:rotateY(0) translateY(4px);box-shadow:0 1px 0 #8a2d08,0 3px 6px rgba(120,45,10,.3)}
+.chap.R .cb:not(.off){background:linear-gradient(180deg,#4fc3f7 0%,#0e8fd0 55%,#0b6aa0 100%);box-shadow:0 5px 0 #08466b,0 9px 16px rgba(10,60,100,.35),inset 0 2px 0 rgba(255,255,255,.45)}
+.cb.off{background:linear-gradient(180deg,#e7ded5,#cfc3b7);color:#7b6d60;box-shadow:0 4px 0 #a99a8b,inset 0 2px 0 rgba(255,255,255,.6);cursor:default}
+.cb.off::after{content:"製作中";font-size:.72em;font-weight:700;margin-left:auto;padding-left:6px;opacity:.85}
+.chap.R .cb.off::after{margin-left:0;margin-right:auto;padding:0 6px 0 0}
+.cb i{font-style:normal}
+@media (max-width:520px){.chap{width:104px}.cb span{overflow:hidden;text-overflow:ellipsis}}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+<div id="stage"><canvas id="cv" aria-label="3D 浮空島"></canvas></div>
+<nav class="chap L" id="chapL" aria-label="課程篇章"></nav><nav class="chap R" id="chapR" aria-label="課程篇章"></nav>
+<div id="hud">
+  <div id="lb">準備計時</div>
+  <div id="t" title="點一下自訂時間">--:--</div>
+  <div id="edit" hidden><input id="em" type="number" min="0" max="999" aria-label="分">分<input id="es" type="number" min="0" max="59" aria-label="秒">秒<button id="eok">開始</button></div>
+  <div id="bar"></div>
+</div>
+<script type="module">
+import { IslandWorld } from './shared/world.js';
+const C = window.ISLAND_CONFIG || {}, $ = id => document.getElementById(id);
+const p2 = n => String(n).padStart(2, '0');
+if (window.top === window) document.body.classList.add('solo');
+const store = { get(k, d){ try { const v = localStorage.getItem('island.' + k); return v === null ? d : JSON.parse(v); } catch (_) { return d; } },
+                set(k, v){ try { localStorage.setItem('island.' + k, JSON.stringify(v)); } catch (_) {} } };
+
+/* ---------- 3D 島嶼 ---------- */
+const world = new IslandWorld($('cv'), { resolve: s => s, lookY: -0.2, fitW: 4.3, fitH: 4.4 });
+world.setScene({
+  theme: C.theme || 'beach', spin: C.spin ?? 0.35, clouds: C.clouds !== false, waterfall: C.waterfall !== false, plaza: C.plaza !== false,
+  items: [
+    ...(C.chars || []).map((c, i) => ({ id: 'c' + i, type: 'char', style: 'A', src: c.src, x: c.x || 0, z: c.z || 0, rot: c.rot || 0, scale: c.scale || 1, anim: 'none' })),
+    ...(C.decor || []).map((d, i) => ({ id: 'd' + i, type: 'decor', kind: d.kind, x: d.x || 0, z: d.z || 0, rot: d.rot || 0, scale: d.scale || 1 })),
+  ],
+});
+let drag = null;
+$('cv').addEventListener('pointerdown', e => { drag = e.clientX; world.dragging = true; $('cv').setPointerCapture(e.pointerId); });
+$('cv').addEventListener('pointermove', e => { if (drag === null) return; world.yaw += (e.clientX - drag) * 0.01; drag = e.clientX; world.lastAct = performance.now(); });
+const up = () => { drag = null; world.dragging = false; world.lastAct = performance.now(); };
+$('cv').addEventListener('pointerup', up); $('cv').addEventListener('pointercancel', up);
+
+/* ---------- 聲音（只有計時器會出聲；可靜音） ---------- */
+let mute = store.get('mute', false);
+const endSnd = new Audio('sounds/end_fanfare.mp3'), tickSnd = new Audio('sounds/tick.wav');
+endSnd.volume = 0.9; tickSnd.volume = 0.5;
+const play = a => { if (mute) return; try { a.currentTime = 0; a.play().catch(() => {}); } catch (_) {} };
+
+/* ---------- 背景音樂：一進來就循環播放，只有按 🎵（暫停音樂）或 🔇（全部靜音）才停 ---------- */
+const bgm = C.bgm ? new Audio(C.bgm) : null;
+let bgmOn = store.get('bgmOn', true);
+const BGV = C.bgmVolume ?? 0.4;
+if (bgm){ bgm.loop = true; bgm.volume = 0; bgm.preload = 'auto'; }
+let fadeId = 0;
+function fadeTo(v, ms){ if (!bgm) return; const id = ++fadeId, v0 = bgm.volume, t0 = performance.now(); const step = () => { if (id !== fadeId) return; const k = Math.min(1, (performance.now() - t0) / ms); bgm.volume = v0 + (v - v0) * k; if (k < 1) requestAnimationFrame(step); else if (v === 0) bgm.pause(); }; requestAnimationFrame(step); }
+// 外層首頁的「音樂開關」按鈕（id="bgmBtn"）跟這裡同步
+function syncParent(){
+  try { const b = parent.document.getElementById('bgmBtn'); if (!b) return;
+    if (!bgm){ b.hidden = true; return; }
+    const on = bgmOn && !mute; b.hidden = false; b.textContent = on ? '🔊 音樂：開' : '🔇 音樂：關'; b.classList.toggle('off', !on);
+    b.title = on ? '按一下靜音背景音樂' : '按一下播放背景音樂'; b.setAttribute('aria-pressed', on ? 'true' : 'false'); } catch (_) {}
+}
+function toggleMusic(){ if (mute){ mute = false; store.set('mute', false); bgmOn = true; } else bgmOn = !bgmOn; store.set('bgmOn', bgmOn); bgmSync(); drawBar(); }
+window.islandMusic = { toggle: toggleMusic, isOn: () => !!bgm && bgmOn && !mute };
+function bgmSync(){
+  syncParent();
+  if (!bgm) return;
+  if (bgmOn && !mute){ if (bgm.paused) bgm.play().then(() => fadeTo(BGV, 1800)).catch(() => {}); else fadeTo(BGV, 400); }
+  else if (!bgm.paused) fadeTo(0, 500);
+}
+// 瀏覽器擋自動播放時：使用者第一次點擊（本頁或外層首頁）就開始播
+const kick = () => { if (bgm && bgm.paused) bgmSync(); };
+['pointerdown', 'keydown'].forEach(ev => { addEventListener(ev, kick, { once: true }); try { parent.document.addEventListener(ev, kick, { once: true }); } catch (_) {} });
+bgmSync();
+
+/* ---------- 計時器 ---------- */
+const T = { total: 0, remain: 0, endAt: 0, running: false, finished: false, active: false, lastSec: -1, preset: null };
+function startTimer(sec, preset){
+  sec = Math.max(1, Math.min(999 * 60 + 59, Math.round(sec)));
+  Object.assign(T, { total: sec, remain: sec * 1000, endAt: performance.now() + sec * 1000, running: true, finished: false, active: true, lastSec: -1, preset: preset ?? null });
+  endSnd.pause(); if (preset !== 'class') store.set('last', sec); drawBar(); render();
+}
+function toggle(){
+  if (!T.active){ startTimer(store.get('last', (C.presets || [5])[0] * 60)); return; }
+  if (T.finished){ startTimer(T.total, T.preset); return; }
+  if (T.running){ T.remain = Math.max(0, T.endAt - performance.now()); T.running = false; }
+  else { T.endAt = performance.now() + T.remain; T.running = true; }
+  drawBar(); render();
+}
+function reset(){ Object.assign(T, { running: false, finished: false, active: false, preset: null }); endSnd.pause(); drawBar(); render(); }
+
+/* ---------- 課程時間（只給「下課」按鈕用；一進來不自動倒數） ---------- */
+const S = (C.sessions || []).map(s => ({ n: s.name, a: Date.parse(s.start), b: Date.parse(s.end) }));
+function classText(){
+  const now = Date.now(), cur = S.find(s => now >= s.a && now < s.b), nx = S.find(s => now < s.a);
+  if (cur){ const r = Math.floor((cur.b - now) / 1000); return { lb: cur.n + ' 上課中・下課倒數', t: p2(Math.floor(r / 3600)) + ':' + p2(Math.floor(r % 3600 / 60)) + ':' + p2(r % 60), cls: 'live' }; }
+  if (!nx) return { lb: C.doneText || '課程已結束', t: '準備好了嗎？', cls: '' };
+  const r = Math.floor((nx.a - now) / 1000), d = Math.floor(r / 86400);
+  const when = new Date(nx.a).toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Taipei' });
+  return { lb: '距離 ' + nx.n + ' 開課（' + when + '）', t: (d ? d + '<small>天</small>' : '') + p2(Math.floor(r % 86400 / 3600)) + ':' + p2(Math.floor(r % 3600 / 60)) + ':' + p2(r % 60), cls: '' };
+}
+function classEnd(){
+  const now = Date.now(), cur = S.find(s => now >= s.a && now < s.b);
+  if (cur){ startTimer((cur.b - now) / 1000, 'class'); T.className = cur.n; drawBar(); return; }
+  const nx = S.find(s => now < s.a);
+  T.note = nx ? '現在不是上課時間（' + nx.n + ' 於 ' + new Date(nx.a).toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Taipei' }) + ' 開始）' : (C.doneText || '課程已結束');
+  T.noteUntil = Date.now() + 3500;
+}
+const fmt = ms => { const s = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return (h ? h + ':' + p2(m) : p2(m)) + ':' + p2(s % 60); };
+function render(){
+  const t = $('t');
+  if (!T.active){
+    $('lb').textContent = T.noteUntil > Date.now() ? T.note : (C.idleText ?? '按 3／5／10 分、下課或自訂，開始計時');
+    t.textContent = fmt(store.get('last', 300) * 1000); t.className = 'idle'; return;
+  }
+  const rem = T.running ? Math.max(0, T.endAt - performance.now()) : T.remain;
+  if (T.running && rem <= 0 && !T.finished){ T.finished = true; T.running = false; T.remain = 0; play(endSnd); world.celebrate(5); drawBar(); }
+  if (T.running){ const s = Math.ceil(rem / 1000); if (s <= 10 && s !== T.lastSec){ T.lastSec = s; play(tickSnd); } }
+  $('lb').textContent = (T.preset === 'class' ? (T.className || '') + ' 下課倒數' : (C.timerLabel || '倒數計時')) + (T.running ? '' : T.finished ? '' : '（暫停中）');
+  if (T.finished){ t.textContent = T.preset === 'class' ? (C.classEndText || '下課囉！') : (C.endText || '時間到！'); t.className = 'done'; }
+  else { t.textContent = fmt(rem); t.className = T.running && rem <= 10000 ? 'warn' : ''; }
+}
+setInterval(render, 200);
+
+/* ---------- 按鈕列 ---------- */
+function drawBar(){
+  const b = $('bar');
+  b.innerHTML = (C.presets || [3, 5, 10]).map(m => `<button data-m="${m}" class="${T.active && T.preset === m ? 'on' : ''}">${m} 分</button>`).join('') +
+    `<button data-a="class" class="${T.active && T.preset === 'class' ? 'on' : ''}" title="倒數到這堂課下課">下課</button><button data-a="custom">自訂</button><button data-a="toggle" class="main" title="開始／暫停（空白鍵）">${T.active && T.running ? '⏸' : '▶'}</button>` +
+    `<button data-a="reset" title="結束計時，回到課程倒數（R）">↺</button><button data-a="mute" title="聲音開關（M）">${mute ? '🔇' : '🔊'}</button>` +
+    (bgm ? `<button data-a="bgm" class="${bgmOn && !mute ? 'on' : ''}" title="背景音樂開／關">🎵</button>` : '') +
+    `<button data-a="full" title="全螢幕／開大畫面">⛶</button>`;
+}
+function openEdit(){
+  const e = $('edit'); e.hidden = !e.hidden;
+  if (!e.hidden){ const last = store.get('last', 300); $('em').value = Math.floor(last / 60); $('es').value = last % 60; $('em').focus(); $('em').select(); }
+}
+$('bar').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.m){ $('edit').hidden = true; startTimer(+b.dataset.m * 60, +b.dataset.m); return; }
+  const a = b.dataset.a;
+  if (a === 'custom') openEdit();
+  else if (a === 'class'){ $('edit').hidden = true; classEnd(); }
+  else if (a === 'toggle') toggle();
+  else if (a === 'reset') reset();
+  else if (a === 'mute'){ mute = !mute; store.set('mute', mute); if (mute) endSnd.pause(); bgmSync(); drawBar(); }
+  else if (a === 'bgm') toggleMusic();
+  else if (a === 'full'){
+    if (window.top !== window){ window.open(location.href, '_blank'); return; }   // 嵌在首頁時：開新分頁的大畫面
+    if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen().catch(() => {});
+  }
+};
+$('t').onclick = openEdit;
+$('eok').onclick = () => { const s = (+$('em').value || 0) * 60 + (+$('es').value || 0); if (s > 0){ $('edit').hidden = true; startTimer(s); } };
+$('edit').onkeydown = e => { if (e.key === 'Enter') $('eok').click(); if (e.key === 'Escape') $('edit').hidden = true; };
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space'){ e.preventDefault(); toggle(); }
+  else if (e.key === 'r' || e.key === 'R') reset();
+  else if (e.key === 'm' || e.key === 'M'){ mute = !mute; store.set('mute', mute); bgmSync(); drawBar(); }
+});
+
+/* ---------- 篇章立體按鈕：點了整頁跳到該篇章 ---------- */
+(function(){
+  const ch = C.chapters || {}, base = new URL(ch.base || '../../', location.href), esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const draw = (el, g) => { if (!g){ el.remove(); return; }
+    el.innerHTML = '<h3>' + esc(g.name) + '</h3>' + g.items.map(it => it.href
+      ? '<a class="cb" target="_top" href="' + esc(new URL(it.href, base).href) + '" title="' + esc(it.title || it.label) + '"><i>' + esc(it.icon) + '</i><span>' + esc(it.label) + '</span></a>'
+      : '<span class="cb off" title="' + esc((it.title || it.label) + '（製作中）') + '"><i>' + esc(it.icon) + '</i><span>' + esc(it.label) + '</span></span>').join(''); };
+  const gs = ch.groups || []; draw($('chapL'), gs[0]); draw($('chapR'), gs[1]);
+})();
+drawBar(); render();
+</script>
+</body>
+</html>

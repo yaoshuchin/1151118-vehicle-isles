@@ -1,0 +1,28 @@
+/* 3D 建模生成器與互動元件 */
+.sbody.kitL{grid-template-columns:1.05fr 1fr}
+.kitfree-wrap{position:sticky;top:0;z-index:2;background:inherit}
+iframe.kitfree{width:100%;height:clamp(320px,52vh,560px);border:0;border-radius:14px;background:#eef3f8;display:block}
+.ktab{width:100%;border-collapse:collapse;font-size:15px}
+.ktab th,.ktab td{border-bottom:1px solid #e2e8f0;padding:5px 6px;text-align:left;vertical-align:top}
+.ktab th{white-space:nowrap;color:#334155}.ktab td.mut{color:#64748b;font-size:13px}
+.mixer{display:grid;grid-template-columns:1fr 240px;gap:12px;align-items:center}
+.mx-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}.mx-btns .btn{font-size:14px;padding:7px 8px}
+.mx-svg{width:100%;max-width:240px}.mx-svg .mxc{transition:r .25s,fill .25s}
+.tbl{width:100%;border-collapse:collapse;font-size:15.5px;margin:.4em 0}
+.tbl th,.tbl td{border:1px solid #cbd5e1;padding:6px 8px;text-align:left;vertical-align:top}
+.tbl thead th{background:#0f172a;color:#fff}.tbl tbody tr:nth-child(even){background:#f8fafc}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:.4em 0}
+.cards .cd{border:1px solid #cbd5e1;border-radius:12px;padding:10px 12px;background:#fff}
+.cards .cd b{display:block;font-size:16px;color:#0f172a}.cards .cd small{color:#64748b}
+.src{font-size:13px;color:#64748b;margin-top:.4em}
+@media (max-width:900px){.sbody.kitL{grid-template-columns:1fr}.kitfree-wrap{position:static}.mixer{grid-template-columns:1fr}}
+body.print iframe.kitfree{height:420px}
+
+/* 一鍵安裝／登入 CLI 列（2026-11-18） */
+.engs{display:flex;flex-direction:column;gap:7px;margin:.4em 0}
+.engrow{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:7px 10px;border:1.5px solid var(--pline,#dbe3ee);border-radius:10px;background:var(--ppanel,#fff)}
+.engrow .light{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:15px}
+.engrow .light .dot{width:10px;height:10px;border-radius:50%;background:#c4ccd8}
+.engrow .light.on .dot{background:#16a34a}.engrow .light.half .dot{background:#eab308}
+.engrow .ok{color:#16a34a;font-size:13px}.engrow .warn{color:#b45309;font-size:13px}
+.engrow .clibtn{margin-left:auto;display:inline-flex;gap:6px}

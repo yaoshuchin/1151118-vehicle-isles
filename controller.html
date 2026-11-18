@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>手機遙控器｜無人載具競技群島</title>
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}</style>
+<style>
+  :root{--team:#ff5a1f}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+  html,body{margin:0;height:100%;overflow:hidden;background:#0f172a;color:#e2e8f0;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;touch-action:none}
+  header{position:fixed;top:0;left:0;right:0;display:flex;gap:10px;align-items:center;padding:calc(8px + env(safe-area-inset-top)) 14px 8px;background:rgba(2,6,23,.7);z-index:5}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-weight:800;padding:.2em .7em;border-radius:99px;background:var(--team);color:#fff}
+  #st{margin-left:auto;font-size:.9em;font-weight:700}
+  #st.on{color:#4ade80}#st.off{color:#fbbf24}#st.bad{color:#f87171}
+  .info{position:fixed;top:56px;left:0;right:0;text-align:center;font-size:clamp(18px,4vw,28px);font-weight:800;z-index:4;pointer-events:none}
+  .info small{display:block;font-size:.55em;font-weight:600;color:#94a3b8}
+  .zone{position:fixed;bottom:0;top:0;width:50%;z-index:2}
+  #zl{left:0}#zr{right:0}
+  .stick{position:fixed;width:150px;height:150px;border-radius:50%;border:3px solid rgba(255,255,255,.25);background:rgba(255,255,255,.05);pointer-events:none;z-index:3}
+  .stick i{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:var(--team);box-shadow:0 4px 18px rgba(0,0,0,.4)}
+  .stick b{position:absolute;left:0;right:0;bottom:-28px;text-align:center;font-size:13px;color:#94a3b8}
+  .btns{position:fixed;right:18px;top:96px;display:flex;flex-direction:column;gap:12px;z-index:4}
+  .btns button{width:84px;height:84px;border-radius:50%;border:none;font-size:18px;font-weight:900;color:#fff;background:#334155;box-shadow:0 4px 0 #1e293b}
+  .btns button.dn{transform:translateY(3px);box-shadow:0 1px 0 #1e293b;background:var(--team)}
+  .emo{position:fixed;left:14px;top:96px;display:flex;gap:8px;z-index:4}
+  .emo button{font-size:22px;background:#1e293b;border:none;border-radius:12px;padding:6px 10px}
+  .rot{display:none;position:fixed;inset:0;background:#0f172a;z-index:20;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:20px;font-weight:700}
+  @media (orientation:portrait) and (max-width:700px){.rot{display:flex}}
+  .over{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,.92);z-index:30;padding:24px;text-align:center}
+  .over.show{display:flex}
+  .over input{font:inherit;font-size:20px;padding:.5em;border-radius:10px;border:none;width:min(320px,80vw);text-align:center}
+  .over button{font:inherit;font-size:20px;font-weight:800;padding:.6em 1.4em;border:none;border-radius:12px;background:var(--team);color:#fff;margin-top:14px}
+</style>
+</head>
+<body>
+<header><span class="chip" id="chip">—</span><span id="game"></span><span id="st" class="off">連線中…</span></header>
+<div class="info" id="info">等待老師開始<small id="sub"></small></div>
+<div class="zone" id="zl"></div><div class="zone" id="zr"></div>
+<div class="stick" id="sl"><i></i><b id="ll"></b></div>
+<div class="stick" id="sr"><i></i><b id="rl"></b></div>
+<div class="emo"><button data-e="👍">👍</button><button data-e="🔥">🔥</button><button data-e="😱">😱</button></div>
+<div class="btns" id="btns"></div>
+<div class="rot">請把手機轉成橫向<br>（雙手握持，左右兩個搖桿）</div>
+<div class="over show" id="nameBox"><div><h2>輸入暱稱加入比賽</h2><input id="nm" maxlength="12" placeholder="例：小明"><br><button id="go">加入</button><p style="color:#94a3b8">加入後請把手機轉成橫向</p></div></div>
+<div class="over" id="endBox"><div id="endMsg"></div></div>
+<script type="module" src="js/pad.js"></script>
+</body>
+</html>

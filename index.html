@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>無人載具競技群島</title>
+<meta name="description" content="無人機、格鬥機器人、無人船：機構拆解、博物館、模擬競技、AI 載具工坊與多人競技平台的課程。">
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}</style>
+<link rel="stylesheet" href="css/app.css">
+<style>
+  .hero{min-height:calc(100vh - 0px);display:grid;grid-template-columns:1.25fr 1fr;gap:clamp(16px,4vw,64px);align-items:center;padding:clamp(24px,5vw,72px) 16px;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#0e7490 100%);color:#e2e8f0}
+  .hero h1{font-size:clamp(34px,5vw,76px);color:#fff;margin:.1em 0 .25em}
+  .hero .kick{color:#fdba74;font-weight:800;letter-spacing:.08em}
+  .hero p{font-size:clamp(17px,1.5vw,22px);max-width:none}
+  .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+  .feat div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:14px}
+  .feat b{display:block;color:#fff;font-size:1.1em}
+  .login{background:#fff;color:var(--ink);border-radius:18px;padding:clamp(20px,3vw,36px);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+  .login h2{margin-top:0}
+  .login input{font-size:1.15em;margin:.4em 0 .8em}
+  .msg{min-height:1.5em;font-weight:700}
+  .msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}
+  .days{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:32px 16px;background:#fff}
+  .days div{border-left:4px solid var(--accent);padding:4px 14px}
+  .days b{font-size:1.15em}
+  #intro{position:fixed;inset:0;z-index:200;background:#000;display:flex;align-items:center;justify-content:center}
+  #intro[hidden]{display:none}
+  #intro video{width:100%;height:100%;object-fit:cover}
+  #intro .ibar{position:absolute;right:16px;bottom:16px;display:flex;gap:10px}
+  #intro .ibar button{font:inherit;font-weight:700;color:#fff;background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.4);border-radius:99px;padding:.5em 1.1em;cursor:pointer;min-height:44px}
+  @media (max-width:900px){.hero{grid-template-columns:1fr}.feat,.days{grid-template-columns:1fr 1fr}}
+  @media (max-width:520px){.feat,.days{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div>
+    <div class="kick">AI 機構學習與競技課程</div>
+    <h1>無人載具競技群島</h1>
+    <p>選一台無人機、格鬥機器人或無人船，在中央島把它拆開看懂；走進三座博物館；在競技島跟電腦對打；用 AI 工坊設計自己的載具；最後用手機掃 QR，在老師的平台上多人對戰。</p>
+    <div class="feat">
+      <div><b>機構拆解</b>爆炸分解、X 光、組裝挑戰，讀數全部來自真實公式</div>
+      <div><b>三項賽事</b>無人機足球 3 對 3、格鬥 1 對 1、5 船水道賽</div>
+      <div><b>AI 工坊</b>生成器＋AI 調參，匯出 Blender 與技能包</div>
+    </div>
+  </div>
+  <form class="login" id="f">
+    <h2>研習專屬資源驗證</h2>
+    <p class="mut">請輸入研習通行碼進入課程平台。</p>
+    <label for="pw">研習通行碼</label>
+    <input id="pw" type="password" autocomplete="current-password" required placeholder="請輸入研習通行碼">
+    <button class="btn pri" style="width:100%;justify-content:center;font-size:1.1em" id="go">進入群島</button>
+    <p class="msg" id="msg"></p>
+    <p class="mut" style="font-size:.88em;margin:0">手機遙控器不需要登入：比賽時直接掃老師投影的 QR 碼即可。</p>
+  </form>
+</section>
+<section class="days">
+  <div><b>第一天・中央島</b><br>認識機械：三類九型拆解、博物館、手算抽查、組裝挑戰、法規安全</div>
+  <div><b>第二天・競技島</b><br>模擬競技：穿環、足球 1v1／3v3、格鬥規則與相剋、水道賽與船型實驗</div>
+  <div><b>第三天・工坊島</b><br>AI 打造：生成器、AI 串接偵測、Blender 銜接、技能包、看圖驗收</div>
+  <div><b>第四天・平台</b><br>多人對戰：手機掃 QR 遙控、三項線上賽、裁判判例、轉播解說、頒獎</div>
+</section>
+<script type="module">
+  import { $, authorFooter, AUTH_KEY, AUTH_HASH, checkAuth } from './js/ui.js';
+  document.body.append(authorFooter());
+  const next = new URLSearchParams(location.search).get('next') || 'portal.html';
+  const safeNext = /^[\w\-./?=&%]+$/.test(next) && !next.startsWith('/') && !next.includes('//') ? next : 'portal.html';
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str.trim()));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  if (checkAuth()) {
+    location.replace(safeNext);
+  }
+
+  document.querySelectorAll('a[href="deck.html"]').forEach(a => a.href = 'course/');
+  // 開場動畫：驗證通過後全螢幕播放（史詩配樂），播完或按「跳過」進入群島
+  const intro = document.createElement('div');
+  intro.id = 'intro';
+  intro.innerHTML = `<video id="iv" playsinline preload="auto" poster="media/intro_poster.jpg" src="media/intro.mp4"></video>
+    <div class="ibar"><button id="isnd" type="button">🔊 有聲</button><button id="iskip" type="button">跳過 ▶▶</button></div>`;
+  intro.hidden = true; document.body.append(intro);
+  const iv = $('#iv'); let left = false;
+  const enter = () => { if (left) return; left = true; try { sessionStorage.setItem('vi.intro', '1'); } catch (_) {} location.replace(safeNext); };
+  iv.onended = enter; $('#iskip').onclick = enter;
+  $('#isnd').onclick = () => { iv.muted = !iv.muted; $('#isnd').textContent = iv.muted ? '🔇 靜音' : '🔊 有聲'; };
+  $('#f').onsubmit = async e => {
+    e.preventDefault(); const m = $('#msg'); $('#go').disabled = true; m.className = 'msg'; m.textContent = '驗證中…';
+    iv.muted = false; iv.play().then(() => { if (intro.hidden) iv.pause(); iv.currentTime = 0; }).catch(() => {});
+    try {
+      const hash = await sha256($('#pw').value);
+      if (hash === AUTH_HASH) {
+        try { localStorage.setItem(AUTH_KEY, AUTH_HASH); } catch (_) {}
+        m.className = 'msg ok'; m.textContent = '驗證成功，歡迎登島！';
+        intro.hidden = false; iv.currentTime = 0;
+        iv.play().catch(() => { iv.muted = true; $('#isnd').textContent = '🔇 靜音'; iv.play().catch(enter); });
+        setTimeout(enter, 16000);   // 保險：影片卡住也會進站
+        return;
+      }
+      m.className = 'msg bad'; m.textContent = '研習通行碼不正確';
+    } catch (_) { m.className = 'msg bad'; m.textContent = '驗證異常，請重試'; }
+    $('#go').disabled = false;
+  };
+</script>
+</body>
+</html>

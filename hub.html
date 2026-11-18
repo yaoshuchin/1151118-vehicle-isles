@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>無人載具競技群島</title>
+<style>#nl-badge-frame,iframe[title="Powered by Netlify"],[id^="netlify-badge"]{display:none!important}</style>
+<link rel="stylesheet" href="css/app.css">
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.js","three/addons/":"./vendor/three/addons/"}}</script>
+<style>
+  .isl{display:flex;flex-direction:column;gap:4px}
+  .isl button{display:grid;grid-template-columns:36px 1fr;gap:10px;align-items:center;text-align:left;border:1px solid transparent;background:none;border-radius:10px;padding:.4em .5em}
+  .isl button:hover,.isl button.on{background:#f1f5f9;border-color:var(--line)}
+  .isl i{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;font-style:normal;font-weight:900}
+  .isl small{display:block;color:var(--mut)}
+  .me{display:flex;align-items:center;gap:10px}
+  .me .dot{width:22px;height:22px;border-radius:50%}
+  .pickgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .pickgrid button{border:2px solid var(--line);background:#fff;border-radius:14px;padding:16px;text-align:left}
+  .pickgrid button:hover{border-color:var(--accent)}
+  .pickgrid button.on{border-color:var(--accent);background:#fff7ed}
+  .pickgrid b{font-size:1.2em;display:block}
+  .pv{height:260px;border-radius:14px;background:#eef3f8;margin:12px 0;overflow:hidden}
+  .pv canvas{width:100%;height:100%;display:block}
+  .acts{display:flex;flex-wrap:wrap;gap:8px}
+  @media (max-width:760px){.pickgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="stage"><canvas id="c"></canvas></div>
+<aside class="side l">
+  <div class="panel"><h3>我的載具</h3><div class="me" id="me"></div><button class="btn sm" style="margin-top:8px" id="change">重新選擇</button></div>
+  <div class="panel"><h3>島嶼地圖</h3><p class="mut" style="margin:0 0 .4em;font-size:.9em">點島嶼或下方名稱。</p><div class="isl" id="isl"></div></div>
+</aside>
+<aside class="side r" id="info" style="display:none"><div class="panel" id="infoP"></div></aside>
+<div class="modal" id="pick"><div class="card">
+  <h2>選擇你的載具</h2><p class="mut">先選類型，再選型態。之後在拆解車庫、競技場、載具工坊都會用這一台。</p>
+  <div class="pickgrid" id="ptype"></div>
+  <div class="pv"><canvas id="pv"></canvas></div>
+  <div class="pickgrid" id="pvar"></div>
+  <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn pri" id="ok">就是它，出發</button></div>
+</div></div>
+<script type="module" src="js/hub.js"></script>
+</body>
+</html>
